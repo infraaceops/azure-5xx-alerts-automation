@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-sample
+  labels:
+    app: nginx-sample
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-sample
+  template:
+    metadata:
+      labels:
+        app: nginx-sample
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-sample-lb
+  labels:
+    app: nginx-sample
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx-sample
+  ports:
+    - name: http
+      protocol: TCP
+      port: 83          # LoadBalancer port (what App Gateway will hit)
+      targetPort: 80    # Nginx container port
